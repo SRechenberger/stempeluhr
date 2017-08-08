@@ -99,11 +99,6 @@ endPause' (AngebrochenePause begin : pauses) = do
   t <- now
   pure $ Right $ BeendetePause begin t : pauses
 
-main :: IO ()
-main = do
-  arg:_ <- getArgs
-  main' "stempelkarte" arg
-
 withStempelkarte :: FilePath -> (Stempelkarte -> IO (Either ErrorMessage Stempelkarte)) -> IO ()
 withStempelkarte fp f = do
   e <- doesFileExist fp
@@ -140,3 +135,8 @@ main' fp "auflisten"    = withStempelkarte fp printStempelkarte
 main' _ others          = do
   putStrLn $ "„" ++ others ++ "“ ist kein Kommando! Nutze „beginn“, „ende“, „pause_beginn“ oder „pause_ende“."
   exitWith $ ExitFailure 7
+
+main :: IO ()
+main = do
+  arg:_ <- getArgs
+  main' "stempelkarte" arg
