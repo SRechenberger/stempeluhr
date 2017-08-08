@@ -6,6 +6,7 @@ import System.Directory
 import Data.Time.LocalTime
 import Data.Time
 import Data.Function
+import Control.Monad
 
 data Pause
   = AngebrochenePause ZonedTime
@@ -117,11 +118,25 @@ withStempelkarte fp f = do
       writeFile fp (show sk'')
       exitWith ExitSuccess
 
+printStempelkarte :: Stempelkarte -> IO (Either ErrorMessage Stempelkarte)
+printStempelkarte sk@(Stempelkarte ps) = do
+  forM_ (reverse ps) $ \p -> case p of
+    Angebrochen t pauses -> do
+      putStrLn $ "ab " ++ show t
+      forM_ (reverse pauses) $ \pause -> do
+        putStrLn $ "  " ++ show pause
+    Beendet t1 t2 pauses -> do
+      putStrLn $ "von " ++ show t1 ++ " bis " ++ show t2
+      forM_ (reverse pauses) $ \pause -> do
+        putStrLn $ "  " ++ show pause
+  pure $ Right $ sk
+
 main' :: String -> String -> IO ()
 main' fp "beginn"       = withStempelkarte fp beginDay
 main' fp "ende"         = withStempelkarte fp endDay
 main' fp "pause_beginn" = withStempelkarte fp beginPause
 main' fp "pause_ende"   = withStempelkarte fp endPause
+main' fp "auflisten"    = withStempelkarte fp printStempelkarte
 main' _ others          = do
   putStrLn $ "„" ++ others ++ "“ ist kein Kommando! Nutze „beginn“, „ende“, „pause_beginn“ oder „pause_ende“."
   exitWith $ ExitFailure 7
