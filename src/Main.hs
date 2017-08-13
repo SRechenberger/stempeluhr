@@ -53,7 +53,7 @@ beginDay (Stempelkarte days@(Beendet begin end pauses:days')) = do
         "Dieser Tag wurde schon beendet; möchtest du ihn forführen? [y/n]"
         "Bitte gib nur „y“ oder „n“ ein!"
       if reopen
-        then pure $ Right $ Stempelkarte (Angebrochen begin pauses:days')
+        then pure $ Right $ Stempelkarte (Angebrochen begin (BeendetePause end t : pauses) : days')
         else pure $ Left ("Der Tag wurde bereits beendet.", 2)
     else do
       pure $ Right $ Stempelkarte (Angebrochen t [] : days)
